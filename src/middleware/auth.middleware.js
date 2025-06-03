@@ -15,9 +15,13 @@ const protectRoute = async(req,res,next) => {
 
     try {
 
-        const token = req.header("Authorization").replace("Bearer", "");
+        const authHeader = req.header("Authorization");
+        if (!authHeader) return res.status(401).json({ message: "No authentication token, access denied" });
 
-        if (!token) return res.status(401).json({ message: "No authentication token, access denied" });
+        const token = authHeader.split(" ")[1]; // اینجا "Bearer" و خود توکن جدا می‌شن
+
+        if (!token) return res.status(401).json({ message: "Token is missing" });
+
         
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
